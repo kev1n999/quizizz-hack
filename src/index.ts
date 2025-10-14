@@ -17,6 +17,8 @@ import { questionsResolvable } from "functions/questions";
   const credentials = await loginCredentials();
   const exerciceUrl = await exercicesUrl();
 
+  ascii();
+
   await loginWithGoogle(page, credentials.email, credentials.password);
   await questionsResolvable(page, exerciceUrl);
 })();
