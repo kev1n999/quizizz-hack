@@ -1,3 +1,4 @@
+import "dotenv/config";
 import "colors";
 import puppeteer from "puppeteer";
 import { loginWithGoogle } from "./functions/login";

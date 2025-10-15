@@ -1,4 +1,5 @@
-import { ElementHandle, Page } from "puppeteer";
+import { Page } from "puppeteer";
+import { getAnswer } from "utils/answer";
 import { sleep } from "utils/sleep";
 
 export async function questionsResolvable(page: Page, exerciceUrl: string) {
@@ -14,36 +15,60 @@ export async function questionsResolvable(page: Page, exerciceUrl: string) {
     });
 
     await page.click('button[data-cy="start-solo-game"]');
-
-    const questionContainer = await page.waitForSelector(
-      'div[id="questionText"]'
-    );
-
-    const questionText = await questionContainer?.evaluate(
-      (d) => d.textContent
-    );
-    console.log(`====== Descrição da Atividade ======`.yellow);
-    console.log(`\n${questionText}`.green);
-
-    const options = await page.evaluate(() => {
-      const containers = Array.from(document.querySelectorAll("div")).filter(
-        (div) => div.id.includes("option")
+    for (let i = 0; i < 20; i++) {
+      const questionContainer = await page.waitForSelector(
+        'div[id="questionText"]'
       );
 
-      return containers.map((div) => ({
-        text: div.textContent,
-      }));
-    });
+      const questionText = await questionContainer?.evaluate(
+        (d) => d.textContent
+      );
+      console.log(`====== Descrição da Atividade ======`.yellow);
+      console.log(`\n${questionText}`.green);
 
-    for (let i = 0; i < options.length; i++) {
-      allOptions.set(i, options[i].text);
-    }
+      const options = await page.evaluate(() => {
+        const containers = Array.from(document.querySelectorAll("div")).filter(
+          (div) => div.id.includes("option")
+        );
 
-    if (allOptions.size > 0) {
-      console.log(`\n====== ALTERNATIVAS ======`.yellow);
-      allOptions.forEach((v, i) => {
-        console.log(`${i} - ${v}`.green);
+        return containers.map((div) => ({
+          text: div.textContent,
+        }));
       });
+
+      for (let i = 0; i < options.length; i++) {
+        allOptions.set(i, options[i].text);
+      }
+
+      if (allOptions.size > 0) {
+        console.log(`\n====== ALTERNATIVAS ======`.yellow);
+        allOptions.forEach((v, i) => {
+          console.log(`${i} - ${v}`.green);
+        });
+      }
+
+      console.log(`\n====== RESPOSTA IDENTIFICADA ======\n`.yellow);
+      const answer = await getAnswer(questionText!, allOptions);
+
+      console.log(`${answer}`.green);
+
+      await page.evaluate((answer) => {
+        const normalizedAnswer = answer.trim().toLowerCase();
+
+        const correctOption = Array.from(
+          document.querySelectorAll("div[id^='option']")
+        ).find((div) =>
+          div.textContent?.trim().toLowerCase().includes(normalizedAnswer)
+        );
+
+        if (correctOption) {
+          (correctOption as HTMLElement).click();
+        } else {
+          console.warn("Nenhuma opção correspondente encontrada:", answer);
+        }
+      }, answer);
+
+      console.log(`\n====== OPÇÃO CLICADA ======\n`.yellow);
     }
   } catch (err) {
     console.error(`[ERROR!]\n${err}`.red);
