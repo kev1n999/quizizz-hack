@@ -81,22 +81,16 @@ export async function questionsResolvable(page: Page, exerciceUrl: string) {
 ------------------------------------------
         \n`.yellow
       );
+
       await page.evaluate((answer) => {
         const correctOption = Array.from(
-          document.querySelectorAll("div[id^='option']")
-        ).find(
-          (div) =>
-            div.textContent?.trim().toLowerCase() ===
-            answer.trim().toLowerCase()
-        );
+          document.querySelectorAll("div")
+        ).find((div) => div.innerText.trim().toLowerCase() === answer.trim().toLowerCase())
 
-        if (correctOption) {
-          (correctOption as HTMLElement).click();
-        } else {
-          console.warn("Nenhuma opção correspondente encontrada:", answer);
-        }
+        correctOption?.click();
       }, answer);
 
+      sleep(2000);
       ascii();
     }
   } catch (err) {

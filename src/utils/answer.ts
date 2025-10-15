@@ -16,7 +16,7 @@ export async function getAnswer(
         options.values()
       ).join(
         "\n"
-      )}\n\nEnvie-me apenas a RESPOSTA (não envie nada além da alternativa correta, exatamente como ela aparece).`
+      )}\n\nEnvie-me apenas a RESPOSTA (não envie nada além da alternativa correta, EXATAMENTE como ela aparece!).`
     );
 
     const response = result.response;
