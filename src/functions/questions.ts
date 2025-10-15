@@ -1,5 +1,6 @@
 import { Page } from "puppeteer";
 import { getAnswer } from "utils/answer";
+import { ascii } from "utils/ascii";
 import { sleep } from "utils/sleep";
 
 export async function questionsResolvable(page: Page, exerciceUrl: string) {
@@ -10,21 +11,40 @@ export async function questionsResolvable(page: Page, exerciceUrl: string) {
     await page.keyboard.press("Escape");
 
     await sleep(3000);
-    await page.waitForSelector('button[data-cy="start-solo-game"]', {
-      timeout: 15000,
-    });
+    const startGame = await page.waitForSelector(
+      'button[data-cy="start-solo-game"]',
+      {
+        timeout: 15000,
+      }
+    );
 
-    await page.click('button[data-cy="start-solo-game"]');
-    for (let i = 0; i < 20; i++) {
+    await startGame?.click();
+
+    const totalQuestions = await page.waitForSelector(
+      'span[data-cy="total-question-number"]'
+    );
+    const totalNumberQuestions = await totalQuestions?.evaluate(
+      (el) => el.innerText
+    );
+
+    console.log(`Total de questões: ${totalNumberQuestions}`);
+
+    for (let i = 0; i < Number(totalNumberQuestions); i++) {
       const questionContainer = await page.waitForSelector(
-        'div[id="questionText"]'
+        'div[id="questionText"]',
+        { timeout: 3000 }
       );
 
       const questionText = await questionContainer?.evaluate(
         (d) => d.textContent
       );
-      console.log(`====== Descrição da Atividade ======`.yellow);
-      console.log(`\n${questionText}`.green);
+      console.log(
+        `
+--------------------------
+| DESCRIÇÂO DA ATIVIDADE |
+--------------------------       `.yellow
+      );
+      console.log(`\n- ${questionText}`.green);
 
       const options = await page.evaluate(() => {
         const containers = Array.from(document.querySelectorAll("div")).filter(
@@ -41,24 +61,33 @@ export async function questionsResolvable(page: Page, exerciceUrl: string) {
       }
 
       if (allOptions.size > 0) {
-        console.log(`\n====== ALTERNATIVAS ======`.yellow);
+        console.log(
+          `
+----------------------------
+| ALTERNATIVAS DISPONÍVEIS |
+----------------------------         
+        `.yellow
+        );
         allOptions.forEach((v, i) => {
           console.log(`${i} - ${v}`.green);
         });
       }
-
-      console.log(`\n====== RESPOSTA IDENTIFICADA ======\n`.yellow);
       const answer = await getAnswer(questionText!, allOptions);
 
-      console.log(`${answer}`.green);
-
+      console.log(
+        `\n
+------------------------------------------
+| RESPOSTA IDENTIFICADA: ${answer.green} |
+------------------------------------------
+        \n`.yellow
+      );
       await page.evaluate((answer) => {
-        const normalizedAnswer = answer.trim().toLowerCase();
-
         const correctOption = Array.from(
           document.querySelectorAll("div[id^='option']")
-        ).find((div) =>
-          div.textContent?.trim().toLowerCase().includes(normalizedAnswer)
+        ).find(
+          (div) =>
+            div.textContent?.trim().toLowerCase() ===
+            answer.trim().toLowerCase()
         );
 
         if (correctOption) {
@@ -68,7 +97,7 @@ export async function questionsResolvable(page: Page, exerciceUrl: string) {
         }
       }, answer);
 
-      console.log(`\n====== OPÇÃO CLICADA ======\n`.yellow);
+      ascii();
     }
   } catch (err) {
     console.error(`[ERROR!]\n${err}`.red);
