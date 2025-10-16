@@ -1,3 +1,5 @@
+import boxen from "boxen";
+import chalk from "chalk";
 import { Page } from "puppeteer";
 import { getAnswer } from "utils/answer";
 import { ascii } from "utils/ascii";
@@ -7,17 +9,17 @@ export async function questionsResolvable(page: Page, exerciceUrl: string) {
   try {
     let allOptions: Map<number, string> = new Map<number, string>();
 
+    ascii();
+
     await page.goto(exerciceUrl);
     await page.keyboard.press("Escape");
 
-    await sleep(3000);
+    await sleep(2000);
+
     const startGame = await page.waitForSelector(
       'button[data-cy="start-solo-game"]',
-      {
-        timeout: 15000,
-      }
+      { timeout: 15000 }
     );
-
     await startGame?.click();
 
     const totalQuestions = await page.waitForSelector(
@@ -27,73 +29,105 @@ export async function questionsResolvable(page: Page, exerciceUrl: string) {
       (el) => el.innerText
     );
 
-    console.log(`Total de questões: ${totalNumberQuestions}`);
+    console.log(
+      boxen(
+        chalk.bold.blue(
+          `NÚMERO DE QUESTÕES ENCONTRADAS: ${totalNumberQuestions}`
+        ),
+        {
+          padding: 0,
+          margin: 0,
+          borderStyle: "round",
+          borderColor: "blue",
+          width: 40,
+        }
+      )
+    );
 
     for (let i = 0; i < Number(totalNumberQuestions); i++) {
       const questionContainer = await page.waitForSelector(
         'div[id="questionText"]',
         { timeout: 3000 }
       );
-
       const questionText = await questionContainer?.evaluate(
-        (d) => d.textContent
+        (el) => el.textContent
       );
+
       console.log(
-        `
---------------------------
-| DESCRIÇÂO DA ATIVIDADE |
---------------------------       `.yellow
+        boxen(
+          chalk.bold.blue(
+            `DESCRIÇÃO DA QUESTÃO\n\n- ${chalk.bold.yellow(questionText)}`
+          ),
+          {
+            padding: 0,
+            margin: 0,
+            borderStyle: "round",
+            borderColor: "blue",
+            width: 40,
+          }
+        )
       );
-      console.log(`\n- ${questionText}`.green);
 
       const options = await page.evaluate(() => {
-        const containers = Array.from(document.querySelectorAll("div")).filter(
-          (div) => div.id.includes("option")
-        );
-
-        return containers.map((div) => ({
-          text: div.textContent,
-        }));
+        return Array.from(document.querySelectorAll("div"))
+          .filter((div) => div.id.includes("option"))
+          .map((div) => div.textContent);
       });
 
-      for (let i = 0; i < options.length; i++) {
-        allOptions.set(i, options[i].text);
-      }
+      allOptions.clear();
+      options.forEach((opt, idx) => allOptions.set(idx, opt));
 
       if (allOptions.size > 0) {
-        console.log(
-          `
-----------------------------
-| ALTERNATIVAS DISPONÍVEIS |
-----------------------------         
-        `.yellow
-        );
         allOptions.forEach((v, i) => {
-          console.log(`${i} - ${v}`.green);
+          console.log(
+            boxen(chalk.greenBright(`${i} - ${v}`), {
+              padding: 0,
+              margin: 0,
+              borderStyle: "round",
+              borderColor: "green",
+              width: 40,
+            })
+          );
         });
       }
+
       const answer = await getAnswer(questionText!, allOptions);
 
       console.log(
-        `\n
-------------------------------------------
-| RESPOSTA IDENTIFICADA: ${answer.green} |
-------------------------------------------
-        \n`.yellow
+        boxen(
+          chalk.bold.blue(
+            `RESPOSTA IDENTIFICADA: ${chalk.greenBright(answer)}`
+          ),
+          {
+            padding: 0,
+            margin: 0,
+            borderStyle: "round",
+            borderColor: "green",
+            width: 40,
+          }
+        )
       );
 
       await page.evaluate((answer) => {
-        const correctOption = Array.from(
-          document.querySelectorAll("div")
-        ).find((div) => div.innerText.trim().toLowerCase() === answer.trim().toLowerCase())
-
+        const correctOption = Array.from(document.querySelectorAll("div")).find(
+          (div) =>
+            div.innerText.trim().toLowerCase() === answer.trim().toLowerCase()
+        );
         correctOption?.click();
       }, answer);
 
-      sleep(2000);
+      await sleep(2000);
+
       ascii();
     }
   } catch (err) {
-    console.error(`[ERROR!]\n${err}`.red);
+    console.error(
+      boxen(chalk.bold.red(`[ERROR]\n${err}`), {
+        padding: 0,
+        margin: 0,
+        borderStyle: "round",
+        borderColor: "red",
+      })
+    );
   }
 }
