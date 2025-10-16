@@ -2,7 +2,7 @@
 
 - O Quizzis Hack é uma simples automação feita para responder questões de atividades na plataforma Quizziz de forma rápida ⚡
 
-# Tecnologias utilizadas 
+## Tecnologias utilizadas 
 
 - TypeScript 
 - Node.js 
@@ -11,7 +11,7 @@
 - Chalk 
 - Google API - Generative AI 
 
-# Como usar
+## Como usar
 
 1. Clone o repositório para sua máquina 
 `git clone https://github.com/kev1n999/quizizz-hack`
@@ -25,6 +25,6 @@ API_KEY=geminikey
 4. Rode a automação ▶
 `npm run dev`
 
-# Observação ⚠️
+## Observação ⚠️
 
 - O projeto ainda está em desenvolvimento, e apresenta inúmeras falhas no funcionamento! 
