@@ -12,6 +12,8 @@ import { questionsResolvable } from "functions/questions";
 
   const browser = await puppeteer.launch({
     headless: false,
+    defaultViewport: null,
+    args: ["--start-maximized"],
   });
 
   const page = await browser.newPage();
