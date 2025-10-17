@@ -2,6 +2,8 @@
 
 - O Quizzis Hack é uma simples automação feita para responder questões de atividades na plataforma Quizziz de forma rápida ⚡
 
+<video src="./public/example.mp4" width="320" height="240" controls></video>
+
 ## Tecnologias utilizadas 
 
 - TypeScript 
