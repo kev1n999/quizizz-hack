@@ -7,7 +7,9 @@ export async function exercicesUrl() {
       name: "exerciceUrl",
       message: "Insira a URL do exercício que você deseja automatizar",
       validate: (url) =>
-        true ? url.startsWith("https://wayground.com/join/") : "URL de exercício inválida!",
+        true
+          ? url.startsWith("https://wayground.com/join/")
+          : "URL de exercício inválida!",
     },
   ]);
 
