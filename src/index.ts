@@ -6,6 +6,9 @@ import { ascii } from "utils/ascii";
 import { loginCredentials } from "prompts/loginCredentials";
 import { exercicesUrl } from "prompts/exercise";
 import { questionsResolvable } from "functions/questions";
+import { confirmLogin } from "prompts/confirmLogin";
+import boxen from "boxen";
+import chalk from "chalk";
 
 (async function main() {
   ascii();
@@ -18,10 +21,28 @@ import { questionsResolvable } from "functions/questions";
 
   const page = await browser.newPage();
   const credentials = await loginCredentials();
-  const exerciceUrl = await exercicesUrl();
 
   ascii();
 
   await loginWithGoogle(page, credentials.email, credentials.password);
-  await questionsResolvable(page, exerciceUrl);
+  const isConfirmedLogin = await confirmLogin();
+
+  if (isConfirmedLogin) {
+    const exerciceUrl = await exercicesUrl();
+    await questionsResolvable(page, exerciceUrl);
+  } else {
+    console.error(
+      boxen(
+        chalk.bold.red(
+          "[Não foi prosseguir com a automação, você não confirmou o seu login corretamente!]"
+        ),
+        {
+          padding: 0,
+          margin: 0,
+          borderStyle: "round",
+          borderColor: "red",
+        }
+      )
+    );
+  }
 })();

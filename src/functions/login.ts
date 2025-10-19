@@ -10,6 +10,7 @@ export async function loginWithGoogle(
 ) {
   try {
     await page.goto(constants.loginUrl);
+    page.waitForNavigation({ waitUntil: "networkidle2" });
 
     await page.evaluate(() => {
       const loginBtn = Array.from(document.querySelectorAll("div")).find(
@@ -22,10 +23,13 @@ export async function loginWithGoogle(
     await sleep(3000);
     await page.type('input[type="email"]', email);
     await page.keyboard.press("Enter");
-
     await sleep(3000);
+    
     await page.type('input[type="password"]', password);
     await page.keyboard.press("Enter");
+
+    page.waitForNavigation({ waitUntil: "networkidle2" });
+
   } catch (err) {
     console.error(`[ERROR!]\n${err}`.red);
   }
