@@ -1,32 +1,40 @@
-# Quizziz Hack 🚀
+# Quizizz Hack 🚀
 
-- O Quizzis Hack é uma simples automação feita para responder questões de atividades na plataforma Quizziz de forma rápida ⚡
+- Quizizz Hack is a simple automation built to quickly answer questions from activities on the Quizizz platform. ⚡
 
 <img src="./public/example.gif" width="820" height="240" />
 
-## Tecnologias utilizadas 
+## Technologies used
 
-- TypeScript 
-- Node.js 
-- Puppeteer 
-- Boxes 
-- Chalk 
-- Google API - Generative AI 
+- TypeScript  
+- Node.js  
+- Puppeteer  
+- Boxes  
+- Chalk  
+- Google API - Generative AI
 
-## Como usar
+## How to use
 
-1. Clone o repositório para sua máquina 
-`git clone https://github.com/kev1n999/quizizz-hack`
+1. Clone the repository to your machine  
+```
+git clone https://github.com/kev1n999/quizizz-hack
+```
 
-2. Instale as dependências 
+2. Install the dependencies  
+```
+cd quizizz-hack
+npm install
+```
 
-3. Crie um .env na raiz do projeto e adicione sua API key do Google Gemini 
-```.env:
+3. Create a `.env` file in the project root and add your Google Gemini API key  
+```
 API_KEY=geminikey
-``` 
-4. Rode a automação ▶
-`npm run dev`
+```
 
-## Observação ⚠️
+4. Run the automation ▶  
+```
+npm run dev
+```
 
-- O projeto ainda está em desenvolvimento, e apresenta inúmeras falhas no funcionamento! 
+## Note ⚠️
+- The project is still under development and has many issues in its operation.
