@@ -1,8 +1,7 @@
 # Quizizz Hack 🚀
 
 - Quizizz Hack is a simple automation built to quickly answer questions from activities on the Quizizz platform. ⚡
-- 
-<img src="https://raw.githubusercontent.com/kev1n999/quizziz-hack/main/public/example.gif" alt="example">
+
 <img src="./public/example.gif" width="820" height="240" />
 
 ## Technologies used
